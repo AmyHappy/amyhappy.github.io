@@ -1,0 +1,34 @@
+language: node_js
+node_js:
+  - "4.4.5"
+
+before_install:
+  - git config --global push.default matching
+  - git config --global user.name "amy sun"
+  - npm install hexo-cli -g
+
+install:
+  - npm install --save
+
+script:
+  - hexo clean
+    # - hexo algolia
+  - hexo generate
+
+after_success:
+  #- hexo d
+  - cd ./public
+  - git init
+  - git add --all .
+  - git commit -m "auto build & deployed via Travis on `date`"
+  - git push --quiet --force https://$GH_DEPLOY_TOKEN@github.com/AmyHappy/amyhappy.github.io.git master
+  - cd ..
+  - rm -rf ./.deploy_git
+  - rm -rf ./public
+
+branches:
+  only:
+    - hexo
+cache:
+  directories:
+    - node_modules
